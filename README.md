@@ -1,4 +1,4 @@
-# Auto Like Tag Instagram
+# Auto Like Tag Instagram (Working 2019)
 
 I was looking for a script to do the instagram autofollow, but I didn't find anything working, I decided to create one.
 
