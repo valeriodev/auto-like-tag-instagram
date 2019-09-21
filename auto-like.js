@@ -169,5 +169,5 @@ AutoLike.prototype = {
 
 
 
-var a = new AutoLike("javascript", 100);
-a.start();
+//var a = new AutoLike("javascript", 100);
+//a.start();

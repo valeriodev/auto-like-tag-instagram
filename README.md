@@ -4,7 +4,7 @@ I was looking for a script to do the instagram autofollow, but I didn't find any
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 ### Prerequisites
 
@@ -26,4 +26,15 @@ https://www.instagram.com/explore/tags/javascript/
 ```
 var myAutoLike = new AutoLike("javascript", 100);
 myAutoLike.start();
+```
+
+Now wait, and enjoy your likes 😎
+
+### Edit timers
+
+If you want to change the timers,next page and like, change the 4 and 5 lines, but be careful not to lower too much, Instagram could block you.
+
+```
+this.timerPage = 2000; //ms
+this.timerLike = 60000; //ms
 ```
