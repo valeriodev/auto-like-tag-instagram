@@ -25,6 +25,7 @@ https://www.instagram.com/explore/tags/javascript/
 
 ```
 //Change "javascript" with the tag you searched on instagram
+//Change 100, Maximum number of posts
 var myAutoLike = new AutoLike("javascript", 100);
 myAutoLike.start();
 ```
