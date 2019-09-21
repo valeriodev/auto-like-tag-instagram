@@ -1,19 +1,21 @@
-function AutoLike (_tag,_query_hash,_maxNumbersOfPost) {
+function AutoLike (_tag,_maxNumbersOfPost) {
     this.tag = _tag;
-    this.query_hash = _query_hash;
     this.maxNumbersOfPost = _maxNumbersOfPost;
-    this.timer = 1000; //ms
-    this.edge = [];
-    this.total = 0;
+    this.timerPage = 2000; //ms
+    this.timerLike = 60000; //ms
+    this.edges = [];
+    this.index = 0;
 }
 
 AutoLike.prototype = {
     constructor: AutoLike,
     start:function ()  {
         let canILike = this._prepareRequestHeader();
-        this.total = 0;
-        if(canILike)
-            this._loadTagNodes();
+        this.edges = [];
+        this.index = 0;
+        if(canILike){
+            this._getQueryHash();
+        }
         else
             console.warn("You must login on www.instagram.com");
     },
@@ -34,26 +36,38 @@ AutoLike.prototype = {
             if(typeof data.data !== "undefined")
                 data.graphql = data.data;
 
-            this.edges = data.graphql.hashtag.edge_hashtag_to_media.edges
+            let edges = data.graphql.hashtag.edge_hashtag_to_media.edges
             this.nextPage = data.graphql.hashtag.edge_hashtag_to_media.page_info.end_cursor;
-            for(let x in this.edges){
-                let id = this.edges[x].node.id;
-                this._doLike(id);
-                this.total++;
+            for(let x in edges){
+                let id = edges[x].node.id;
+                //this._doLike(id);
+                this.edges.push(id);
             }
 
-            console.log("Siamo a " + this.total);
+            console.log("Get " + edges.length + " id");
 
             setTimeout(function(){
-                if(me.total<me.maxNumbersOfPost)
+                if(me.edges.length<me.maxNumbersOfPost)
                     me._loadNextPage();
-                else
-                    console.log("Yeeee " + me.total);
-            },50000)
+                else{
+                    console.log("Collected " + me.edges.length);
+                    me._startLikeTimer();
+                }
+            },me.timerPage)
         }
         else{
             console.warn("No data");
         }
+    },
+
+    _startLikeTimer:function(){
+        var me = this;
+        console.log("Start Likes of " + this.edges.length + " posts every " + this.timerLike + "ms");
+        this._likeInterval = setInterval(function(){
+            let currentNodeId = me.edges[me.index++];
+            console.log("Make like of " + currentNodeId);
+            me._doLike(currentNodeId);
+        },this.timerLike)
     },
 
     _postLUike:function(id, type){
@@ -89,6 +103,49 @@ AutoLike.prototype = {
             return false;
         }
     },
+
+    _getQueryHash:function(){
+        let me = this;
+        var xhrProto = XMLHttpRequest.prototype,
+        origOpen = xhrProto.open;
+
+        xhrProto.open = function (method, url) {
+            
+            let _query_hash = me._getParameterByName("query_hash",url);
+            let _variables = me._getParameterByName("variables",url);
+
+            if(_query_hash!=null && _variables!=null){
+                _variables = JSON.parse(_variables);
+                let _tag_name = _variables["tag_name"];
+                if(_tag_name == me.tag){
+                    console.log("Query Hash Found", _query_hash);
+                    me.query_hash = _query_hash;
+                    xhrProto.open = origOpen;
+                    me._loadTagNodes();
+                    clearInterval(me._intervalScroll);
+                }
+            }
+            return origOpen.apply(this, arguments);
+        };
+
+
+        this._intervalScroll = setInterval(function(){
+            window.scrollTo(0,document.body.scrollHeight);
+        },1000);
+
+
+    },
+
+    _getParameterByName:function(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    },
+
     _getRequest:function(_url,_res){
         let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() { 
@@ -112,4 +169,5 @@ AutoLike.prototype = {
 
 
 
-var a = new AutoLike("coding","174a5243287c5f3a7de741089750ab3b", 200);
+var a = new AutoLike("javascript", 100);
+a.start();
