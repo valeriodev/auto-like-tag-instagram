@@ -16,7 +16,7 @@ https://www.instagram.com/explore/tags/javascript/
 
 ### Installing
 
-1) Open the auto-like.js script, copy the content and paste it into the Google Chrome developer console.
+1) Open the auto-like.js (or auto-like.min.js) script, copy the content and paste it into the Google Chrome developer console.
 
 2) Press enter to install the script.
 
