@@ -24,6 +24,7 @@ https://www.instagram.com/explore/tags/javascript/
 
 
 ```
+//Change "javascript" with the tag you searched on instagram
 var myAutoLike = new AutoLike("javascript", 100);
 myAutoLike.start();
 ```
